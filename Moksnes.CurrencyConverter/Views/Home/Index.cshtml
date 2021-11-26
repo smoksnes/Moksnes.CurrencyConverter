@@ -1,0 +1,68 @@
+﻿@model Moksnes.CurrencyConverter.Controllers.HomeModel
+@{
+    ViewData["Title"] = "Moksnes Currency Converter";
+}
+
+<form asp-controller="Home" asp-action="Change">
+    @*    <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-sm">@Model.SourceCurrency.Value</span>
+        </div>
+        @Html.TextBoxFor(x => x.Amount, new {@class = "form-control amount-input", aria_label = @Model.SourceCurrency.Value, aria_describedby = "inputGroup-sizing-sm"})
+        </div>*@
+    <i class="bi bi-arrow-right"></i>
+    <div class="form-group row">
+        <div class="col-sm-4">
+            <div class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">@Model.SourceCurrency</span>
+                </div>
+                @Html.TextBoxFor(x => x.Amount, new {@class = "form-control amount-input"})
+            </div>
+        </div>
+        <label for="staticEmail" class="col-sm-4 col-form-label text-center">--></label>
+        <div class="col-sm-4">
+            <select name="@Html.NameFor(x => x.TargetCurrency)"
+                    id="@Html.IdFor(x => x.TargetCurrency)"
+                    class="currency-selector form-control">
+                @foreach (var currency in Model.Currencies)
+                {
+                    <option value="@currency.Key"
+                        selected="@Model.TargetCurrency.Equals(currency.Key)"
+                        data-rate="@currency.Value">
+                        @currency.Key
+                    </option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <div class="col-sm-8">
+                <div class="input-group input-group-sm">
+                    @Html.TextBoxFor(x => x.Target, new {@class = "form-control target-input"})
+                    <div class="input-group-append">
+                        <span class="input-group-text target-currency" id="inputGroup-sizing-sm">@Model.TargetCurrency</span>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="@Html.NameFor(x => x.SourceCurrency)" value="@Model.SourceCurrency" />
+            <input type="submit" class="btn btn-primary" data-text="Ändra valuta till " value="Ändra valuta till @Model.TargetCurrency"  />
+        </div>
+    </div>
+</form>
+
+@section scripts {
+<script type="text/javascript">
+    function calculate() {
+        var amount = $('.amount-input').val();
+        var rate = $('.currency-selector').find(":selected").data('rate');
+        $('.target-input').val(rate * amount);
+        $('.target-currency').html($('.currency-selector').find(":selected").val());
+        var submitButton = $('input[type=submit]');
+        submitButton.val(submitButton.data('text') + $('.target-currency').html());
+    };
+    $('.currency-selector').change(calculate);
+    $('.amount-input').on('input', calculate);
+</script>
+}
